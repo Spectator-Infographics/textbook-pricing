@@ -34,16 +34,22 @@ rect:hover {  fill:rgb(98,181,232); }
     align:right;
     width:50px;
 }
+.chart {
+    display: inline-block;
+    vertical-align: middle;
+}
 
 </style>
 <body>
 <div id='dashboard'>
+    <div class='chart' id='histogram'></div>
+    <div class='chart' id='piechart'></div>
 </div>
 <script src="http://d3js.org/d3.v3.min.js"></script><script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script>
 var width = $(document.getElementById("dashboard")).width();
 
-function dashboard(id, fData){
+function dashboard(histogram_id, piechart_id, fData){
     var barColor = 'steelblue';
     function segColor(c){ return {yes:"#807dba", no:"#e08214"}[c]; }
     console.log(fData[0].students);
@@ -59,7 +65,7 @@ function dashboard(id, fData){
         //hGDim.h = 370 - hGDim.t - hGDim.b;
             
         //create svg for histogram.
-        var hGsvg = d3.select(id).append("svg")
+        var hGsvg = d3.select(histogram).append("svg")
             .attr("width", hGDim.w + hGDim.l + hGDim.r)
             .attr("height", hGDim.h + hGDim.t + hGDim.b).append("g")
             .attr("transform", "translate(" + hGDim.l + "," + hGDim.t + ")");
@@ -148,7 +154,7 @@ function dashboard(id, fData){
         pieDim.r = Math.min(pieDim.w, pieDim.h) / 2;
                 
         // create svg for pie chart.
-        var piesvg = d3.select(id).append("svg")
+        var piesvg = d3.select(piechart).append("svg")
             .attr("width", pieDim.w).attr("height", pieDim.h).append("g")
             .attr("transform", "translate("+pieDim.w/2+","+pieDim.h/2+")");
         
@@ -196,7 +202,7 @@ function dashboard(id, fData){
         var leg = {};
             
         // create table for legend.
-        var legend = d3.select(id).append("table").attr('class','legend');
+        var legend = d3.select(piechart).append("table").attr('class','legend');
         
         // create one row per segment.
         var tr = legend.append("tbody").selectAll("tr").data(lD).enter().append("tr");
@@ -264,5 +270,5 @@ var complianceData=[
 ,{Major:'Fun4',compliance:{yes:60, no:40},students:900}
 ];
 
-dashboard('#dashboard',complianceData);
+dashboard('#histogram', '#piechart', complianceData);
 </script>
