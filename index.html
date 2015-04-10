@@ -7,7 +7,7 @@ body{
 }
 path {  stroke: #fff; }
 path:hover {  opacity:0.9; }
-rect:hover {  fill:blue; }
+rect:hover {  fill:rgb(98,181,232); }
 .axis {  font: 10px sans-serif; }
 .legend tr{    border-bottom:1px solid grey; }
 .legend tr:first-child{    border-top:1px solid grey; }
@@ -39,8 +39,10 @@ rect:hover {  fill:blue; }
 <body>
 <div id='dashboard'>
 </div>
-<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://d3js.org/d3.v3.min.js"></script><script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script>
+var width = $(document.getElementById("dashboard")).width();
+
 function dashboard(id, fData){
     var barColor = 'steelblue';
     function segColor(c){ return {yes:"#807dba", no:"#e08214"}[c]; }
@@ -51,8 +53,10 @@ function dashboard(id, fData){
     // function to handle histogram.
     function histoGram(fD){
         var hG={},    hGDim = {t: 60, r: 0, b: 100, l: 0};
-        hGDim.w = 500 - hGDim.l - hGDim.r, 
-        hGDim.h = 370 - hGDim.t - hGDim.b;
+        hGDim.w = width*.56 - hGDim.l - hGDim.r,
+        hGDim.h = hGDim.w * .75 - hGDim.t - hGDim.b;
+        //hGDim.w = 500 - hGDim.l - hGDim.r, 
+        //hGDim.h = 370 - hGDim.t - hGDim.b;
             
         //create svg for histogram.
         var hGsvg = d3.select(id).append("svg")
@@ -139,7 +143,8 @@ function dashboard(id, fData){
     
     // function to handle pieChart.
     function pieChart(pD){
-        var pC ={},    pieDim ={w:250, h: 250};
+        // pieDim ={w:250, h:250};
+        var pC ={},    pieDim ={w:width*.23, h:width*.23};
         pieDim.r = Math.min(pieDim.w, pieDim.h) / 2;
                 
         // create svg for pie chart.
