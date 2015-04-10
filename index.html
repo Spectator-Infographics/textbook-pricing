@@ -51,10 +51,10 @@ var width = $(document.getElementById("dashboard")).width();
 
 function dashboard(histogram_id, piechart_id, fData){
     var barColor = 'steelblue';
-    function segColor(c){ return {yes:"#807dba", no:"#e08214"}[c]; }
+    function segColor(c){ return {Yes:"#807dba", No:"#e08214"}[c]; }
     console.log(fData[0].students);
     // compute total for each major.
-    fData.forEach(function(d){d.total=d.compliance.yes+d.compliance.no;});
+    fData.forEach(function(d){d.total=d.compliance.Yes+d.compliance.No;});
 
     // function to handle histogram.
     function histoGram(fD){
@@ -104,7 +104,7 @@ function dashboard(histogram_id, piechart_id, fData){
             
         //Create the compliance labels above the rectangles.
         bars.append("text")
-            .text(function(d){ return d[1]; }) //text(function(d){ return d3.format(",")(d[1])})
+            .text(function(d){ return d3.format(",")(d[1]); }) //text(function(d){ return d3.format(",")(d[1])})
             .attr("x", function(d) { return x(d[0])+x.rangeBand()/2; })
             .attr("y", function(d) { return y(d[1])-5; })
             .attr("text-anchor", "middle");
@@ -243,7 +243,7 @@ function dashboard(histogram_id, piechart_id, fData){
     }
     
     // calculate total compliance by segment for all majors.
-    var tF = ['yes','no'].map(function(d){ 
+    var tF = ['Yes','No'].map(function(d){ 
         return {type:d, compliance: d3.sum(fData.map(function(t){ return t.compliance[d];}))}; 
     });    
     
@@ -258,16 +258,16 @@ function dashboard(histogram_id, piechart_id, fData){
 
 <script>
 var complianceData=[
-{Major:'History',compliance:{yes:25, no:75},students:1000}
-,{Major:'English',compliance:{yes:24, no:76},students:2000}
-,{Major:'Math',compliance:{yes:45, no:55},students:1500}
-,{Major:'Chemistry',compliance:{yes:45, no:55},students:1900}
-,{Major:'Computer Science',compliance:{yes:100, no:0},students:2700}
-,{Major:'American Studies',compliance:{yes:0, no:100},students:1010}
-,{Major:'Fun',compliance:{yes:33, no:67},students:1800}
-,{Major:'Fun2',compliance:{yes:23, no:77},students:1100}
-,{Major:'Fun3',compliance:{yes:20, no:80},students:800}
-,{Major:'Fun4',compliance:{yes:60, no:40},students:900}
+{Major:'History',compliance:{Yes:25, No:75},students:1000}
+,{Major:'English',compliance:{Yes:24, No:76},students:2000}
+,{Major:'Math',compliance:{Yes:45, No:55},students:1500}
+,{Major:'Chemistry',compliance:{Yes:45, No:55},students:1900}
+,{Major:'Computer Science',compliance:{Yes:100, No:0},students:2700}
+,{Major:'American Studies',compliance:{Yes:0, No:100},students:1010}
+,{Major:'Fun',compliance:{Yes:33, No:67},students:1800}
+,{Major:'Fun2',compliance:{Yes:23, No:77},students:1100}
+,{Major:'Fun3',compliance:{Yes:20, No:80},students:800}
+,{Major:'Fun4',compliance:{Yes:60, No:40},students:900}
 ];
 
 dashboard('#histogram', '#piechart', complianceData);
