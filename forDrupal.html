@@ -1,14 +1,9 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
 <style>
-body{
-    width:1060px;
-    margin:50px auto;
-}
 path {  stroke: #fff; }
 path:hover {  opacity:0.9; }
 rect:hover {  opacity:0.8; /*fill:rgb(98,181,232);*/ }
-.axis {  font: 10px sans-serif; }
+.axis {     font-size: 12px;
+               font-weight: 400; }
 .legend tr{    border-bottom:1px solid grey; }
 .legend tr:first-child{    border-top:1px solid grey; }
 
@@ -19,13 +14,55 @@ rect:hover {  opacity:0.8; /*fill:rgb(98,181,232);*/ }
   shape-rendering: crispEdges;
 }
 
+
+
+@media screen and (min-width: 600px) {
+#mobile-image{
+  display: none !important;
+}
+}
+
+
+#dashboard { margin-right: 6px;
+             margin-left: 6px; 
+             font-family: 'Lato', sans-serif;
+             border: solid;
+             border-width: 1px;
+             border-color: black;
+             padding: 5px 5px 5px 5px; }
+
+@media screen and (max-width: 600px) {
+#dashboard {   display: none !important; }
+#mobile-image{
+  width: 100%;
+  height: 100%;
+}
+}
+#histogram {  font-size: 11px;
+              font-weight: 300;
+ }
+#piechart { margin-top: 25px;
+            font-size: 12px;
+            font-weight: 400;
+ }
+.graphic-title {  text-align: center;
+ position: relative;
+ vertical-align: top;
+ font-family: 'Lato', sans-serif;
+ font-weight: 900;
+ font-size: 16px;
+ }
+
 .x.axis path {  display: none; }
 .legend{
+    margin-top:25px;
     margin-bottom:76px;
+    vertical-align: middle;
     display:inline-block;
     border-collapse: collapse;
     border-spacing: 0px;
-    font: 10px sans-serif;
+    font-size: 12px;
+    font-weight: 400;
 }
 .legend td{
     padding:4px 5px;
@@ -37,20 +74,33 @@ rect:hover {  opacity:0.8; /*fill:rgb(98,181,232);*/ }
 }
 .chart {
     display: inline-block;
-    vertical-align: middle;
+    vertical-align: top
 }
 
+
 </style>
-<body>
+<link href='http://fonts.googleapis.com/css?family=Lato:300,400,900' rel='stylesheet' type='text/css'>
+
+<div id="mobile-image">
+<!-- put image for mobile here: -->
+<img src="http://www.calholmanphotography.com/photoblog/ServeImage?file=2522">
+</div>
 <div id='dashboard'>
-    <div class='chart' id='histogram'></div>
-    <div class='chart' id='piechart'></div>
+    <div class='chart'>
+        <div class='graphic-title' id='histogram-title'>Top Ten Departments <br> by Number of Students</div>
+        <div class='chart' id='histogram'></div>
+    </div>
+    <div class='chart'>
+        <div class='graphic-title'> Percent of Textbooks <br> Listed vs. Unlisted </div>
+        <div class='chart' id='piechart'></div>
+        <div class='chart' id='legend'></div>
+    </div>
 </div>
 <script src="http://d3js.org/d3.v3.min.js"></script><script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script>
 var width = $(document.getElementById("dashboard")).width();
 
-function dashboard(histogram_id, piechart_id, fData){
+function dashboard(histogram_id, piechart_id, legend_id, fData){
     var barColor = 'steelblue';
     function segColor(c){ return {Yes:"#807dba", No:"#e08214"}[c]; }
     console.log(fData[0].students);
@@ -60,13 +110,13 @@ function dashboard(histogram_id, piechart_id, fData){
     // function to handle histogram.
     function histoGram(fD){
         var hG={},    hGDim = {t: 60, r: 0, b: 100, l: 0};
-        hGDim.w = width*.56 - hGDim.l - hGDim.r,
+        hGDim.w = width*.63 - hGDim.l - hGDim.r,
         hGDim.h = hGDim.w * .75 - hGDim.t - hGDim.b;
         //hGDim.w = 500 - hGDim.l - hGDim.r, 
         //hGDim.h = 370 - hGDim.t - hGDim.b;
             
         //create svg for histogram.
-        var hGsvg = d3.select(histogram).append("svg")
+        var hGsvg = d3.select(histogram_id).append("svg")
             .attr("width", hGDim.w + hGDim.l + hGDim.r)
             .attr("height", hGDim.h + hGDim.t + hGDim.b).append("g")
             .attr("transform", "translate(" + hGDim.l + "," + hGDim.t + ")");
@@ -127,7 +177,7 @@ function dashboard(histogram_id, piechart_id, fData){
         }
         
         // create function to update the bars. This will be used by pie-chart.
-        hG.update = function(nD, color, percent){
+        hG.update = function(nD, color, percent, dataID){
             // update the domain of the y-axis map to reflect change in compliances.
             y.domain([0, d3.max(nD, function(d) { return d[1]; })]);
             
@@ -143,7 +193,22 @@ function dashboard(histogram_id, piechart_id, fData){
             // transition the compliance labels location and change value.
             bars.select("text").transition().duration(500)
                 .text(function(d){ return percent ? d3.format("%")(d[1]/100) : d3.format(",")(d[1])})
-                .attr("y", function(d) {return y(d[1])-5; });     
+                .attr("y", function(d) {return y(d[1])-5; });    
+
+            if (dataID === "No")
+            {
+                d3.select('#histogram-title').html("Percent Data Unlisted <br> in Top Ten Departments");
+            } 
+
+            if (dataID === "Yes")
+            {
+                d3.select('#histogram-title').html("Percent Data Listed <br> in Top Ten Departments");
+            } 
+
+            if (dataID === null)
+            {
+                d3.select('#histogram-title').html("Top Ten Departments <br> by Number of Students");
+            }
         }        
         return hG;
     }
@@ -151,11 +216,11 @@ function dashboard(histogram_id, piechart_id, fData){
     // function to handle pieChart.
     function pieChart(pD){
         // pieDim ={w:250, h:250};
-        var pC ={},    pieDim ={w:width*.23, h:width*.23};
+        var pC ={},    pieDim ={w:width*.30, h:width*.30};
         pieDim.r = Math.min(pieDim.w, pieDim.h) / 2;
                 
         // create svg for pie chart.
-        var piesvg = d3.select(piechart).append("svg")
+        var piesvg = d3.select(piechart_id).append("svg")
             .attr("width", pieDim.w).attr("height", pieDim.h).append("g")
             .attr("transform", "translate("+pieDim.w/2+","+pieDim.h/2+")");
         
@@ -180,13 +245,13 @@ function dashboard(histogram_id, piechart_id, fData){
         function mouseover(d){
             // call the update function of histogram with new data.
             hG.update(fData.map(function(v){ 
-                return [v.Major,v.compliance[d.data.type]];}),segColor(d.data.type), true);
+                return [v.Major,v.compliance[d.data.type]];}),segColor(d.data.type), true, d.data.type);
         }
         //Utility function to be called on mouseout a pie slice.
         function mouseout(d){
             // call the update function of histogram with all data.
             hG.update(fData.map(function(v){
-                return [v.Major,v.students];}), barColor, false);
+                return [v.Major,v.students];}), barColor, false, null);
         }
         // Animating the pie-slice requiring a custom function which specifies
         // how the intermediate paths should be drawn.
@@ -203,7 +268,7 @@ function dashboard(histogram_id, piechart_id, fData){
         var leg = {};
             
         // create table for legend.
-        var legend = d3.select(piechart).append("table").attr('class','legend');
+        var legend = d3.select(legend_id).append("table").attr('class','legend');
         
         // create one row per segment.
         var tr = legend.append("tbody").selectAll("tr").data(lD).enter().append("tr");
@@ -211,14 +276,14 @@ function dashboard(histogram_id, piechart_id, fData){
         // create the first column for each segment.
         tr.append("td").append("svg").attr("width", '16').attr("height", '16').append("rect")
             .attr("width", '16').attr("height", '16')
-			.attr("fill",function(d){ return segColor(d.type); });
+            .attr("fill",function(d){ return segColor(d.type); });
             
         // create the second column for each segment.
         tr.append("td").text(function(d){
             if (d.type === "Yes")
-                {return "Data Available"; }
+                {return "Listed"; }
             else
-                {return "Data Unavailable";}
+                {return "Unlisted";}
             });
 
         // create the third column for each segment.
@@ -257,9 +322,10 @@ function dashboard(histogram_id, piechart_id, fData){
     // calculate total compliance by major for all segment.
     var sF = fData.map(function(d){return [d.Major,d.students];});
 
+    var leg= legend(tF);  // create the legend.
+    width = width - $(document.getElementById("legend")).width();
     var hG = histoGram(sF), // create the histogram.
-        pC = pieChart(tF), // create the pie-chart.
-        leg= legend(tF);  // create the legend.
+        pC = pieChart(tF); // create the pie-chart.
 }
 </script>
 
@@ -277,5 +343,5 @@ var complianceData=[
 ,{Major:'Fun4',compliance:{Yes:60, No:40},students:900}
 ];
 
-dashboard('#histogram', '#piechart', complianceData);
+dashboard('#histogram', '#piechart', '#legend', complianceData);
 </script>
