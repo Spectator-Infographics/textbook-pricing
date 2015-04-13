@@ -1,5 +1,45 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+
+<link href='http://fonts.googleapis.com/css?family=Lato:300,400,900' rel='stylesheet' type='text/css'>
+<body>
+
+
+<!-- Article text: -->
+
+
+<p dir="ltr"><span id="docs-internal-guid-381ac43c-b547-29ea-7405-0d8f690d5dce">The Barnard/Columbia Dances, which will take place on May 2 and 3 at </span>Miller Theatre, will feature works from master choreographer Mark Morris, along with pieces by Jodi Melnick, Diane Coburn Bruning, and John Heginbotham.</p>
+
+<!-- article text interupted for graph/mobile image -->
+
+
+<div id="mobile-image">
+<!-- put image for mobile here: -->
+<img src="http://www.calholmanphotography.com/photoblog/ServeImage?file=2522">
+</div>
+<div id='dashboard'>
+    <div class='chart'>
+        <div class='graphic-title' id='histogram-title'>Top Ten Departments <br> by Number of Students</div>
+        <div class='chart' id='histogram'></div>
+    </div>
+    <div class='chart'>
+        <div class='graphic-title'> Percent of Textbooks <br> Listed vs. Unlisted </div>
+        <div class='chart' id='piechart'></div>
+        <div class='chart' id='legend'></div>
+    </div>
+</div>
+<script src="http://d3js.org/d3.v3.min.js"></script><script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+<p></p>
+
+<!-- article text continues -->
+<p><span id="docs-internal-guid-381ac43c-b547-29ea-7405-0d8f690d5dce">Entitled &ldquo;Gloria&rdquo; and set to </span>Vivaldi&rsquo;s &ldquo;Gloria in D major,&rdquo;&nbsp;the Mark Morris piece will be staged by Barnard&rsquo;s Visiting Associate Professor of Professional Practice Marjorie Folkman, BC &rsquo;91. &ldquo;Gloria&rdquo; was originally performed in 1981 by Mark Morris, and Folkman is one of Morris&rsquo;s former dancers.</p>
+
+<!-- article ends -->
+
+
+<!-- COPY and paste all below at bottom of Drupal Body to make graphic work-->
+
 <style>
 path {  stroke: #fff; }
 path:hover {  opacity:0.9; }
@@ -17,6 +57,7 @@ rect:hover {  opacity:0.8; /*fill:rgb(98,181,232);*/ }
 }
 
 
+
 @media screen and (min-width: 600px) {
 #mobile-image{
   display: none !important;
@@ -24,9 +65,13 @@ rect:hover {  opacity:0.8; /*fill:rgb(98,181,232);*/ }
 }
 
 
-#dashboard { margin-right: 12px;
-             margin-left: 12px; 
-             font-family: 'Lato', sans-serif; }
+#dashboard { margin-right: 6px;
+             margin-left: 6px; 
+             font-family: 'Lato', sans-serif;
+             border: solid;
+             border-width: 1px;
+             border-color: black;
+             padding: 5px 5px 5px 5px; }
 
 @media screen and (max-width: 600px) {
 #dashboard {   display: none !important; }
@@ -76,29 +121,11 @@ rect:hover {  opacity:0.8; /*fill:rgb(98,181,232);*/ }
 
 
 </style>
-<link href='http://fonts.googleapis.com/css?family=Lato:300,400,900' rel='stylesheet' type='text/css'>
-<body>
 
-<div id="mobile-image">
-<!-- put image for mobile here: -->
-<img src="http://www.calholmanphotography.com/photoblog/ServeImage?file=2522">
-</div>
-<div id='dashboard'>
-    <div class='chart'>
-        <div class='graphic-title' id='histogram-title'>Top Ten Departments <br> by Number of Students</div>
-        <div class='chart' id='histogram'></div>
-    </div>
-    <div class='chart'>
-        <div class='graphic-title'> Percent of Textbooks <br> Listed vs. Unlisted </div>
-        <div class='chart' id='piechart'></div>
-        <div class='chart' id='legend'></div>
-    </div>
-</div>
-<script src="http://d3js.org/d3.v3.min.js"></script><script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script>
 var width = $(document.getElementById("dashboard")).width();
 
-function dashboard(histogram_id, piechart_id, legend_id, fData){
+function dashboard(histogram_id, piechart_id, legend_id, fData, overallData){
     var barColor = 'steelblue';
     function segColor(c){ return {Yes:"#807dba", No:"#e08214"}[c]; }
     console.log(fData[0].students);
@@ -107,9 +134,9 @@ function dashboard(histogram_id, piechart_id, legend_id, fData){
 
     // function to handle histogram.
     function histoGram(fD){
-        var hG={},    hGDim = {t: 60, r: 0, b: 100, l: 0};
+        var hG={},    hGDim = {t: 60, r: 0, b: 200, l: 0};
         hGDim.w = width*.63 - hGDim.l - hGDim.r,
-        hGDim.h = hGDim.w * .75 - hGDim.t - hGDim.b;
+        hGDim.h = hGDim.w - hGDim.t - hGDim.b;
         //hGDim.w = 500 - hGDim.l - hGDim.r, 
         //hGDim.h = 370 - hGDim.t - hGDim.b;
             
@@ -192,6 +219,7 @@ function dashboard(histogram_id, piechart_id, legend_id, fData){
             bars.select("text").transition().duration(500)
                 .text(function(d){ return percent ? d3.format("%")(d[1]/100) : d3.format(",")(d[1])})
                 .attr("y", function(d) {return y(d[1])-5; });    
+
             if (dataID === "No")
             {
                 d3.select('#histogram-title').html("Percent Data Unlisted <br> in Top Ten Departments");
@@ -211,7 +239,7 @@ function dashboard(histogram_id, piechart_id, legend_id, fData){
     }
     
     // function to handle pieChart.
-    function pieChart(pD){
+    function pieChart(pD, topTenData){
         // pieDim ={w:250, h:250};
         var pC ={},    pieDim ={w:width*.30, h:width*.30};
         pieDim.r = Math.min(pieDim.w, pieDim.h) / 2;
@@ -227,14 +255,17 @@ function dashboard(histogram_id, piechart_id, legend_id, fData){
         // create a function to compute the pie slice angles.
         var pie = d3.layout.pie().sort(null).value(function(d) { return d.compliance; });
 
+
+
+
         // Draw the pie slices.
         piesvg.selectAll("path").data(pie(pD)).enter().append("path").attr("d", arc)
             .each(function(d) { this._current = d; })
             .style("fill", function(d) { return segColor(d.data.type); })
             .on("mouseover",mouseover).on("mouseout",mouseout);
-
         // create function to update pie-chart. This will be used by histogram.
         pC.update = function(nD){
+            console.log(nD);
             piesvg.selectAll("path").data(pie(nD)).transition().duration(500)
                 .attrTween("d", arcTween);
         }        
@@ -311,10 +342,14 @@ function dashboard(histogram_id, piechart_id, legend_id, fData){
         return leg;
     }
     
-    // calculate total compliance by segment for all majors.
     var tF = ['Yes','No'].map(function(d){
+        return {type:d, compliance: d3.sum(overallData.map(function(t){ return t.compliance[d];}))}; 
+    });
+
+    // calculate total compliance by segment for all majors.
+    /*var tF = ['Yes','No'].map(function(d){
         return {type:d, compliance: d3.sum(fData.map(function(t){ return t.compliance[d];}))}; 
-    });    
+    }); */   
     
     // calculate total compliance by major for all segment.
     var sF = fData.map(function(d){return [d.Major,d.students];});
@@ -322,23 +357,24 @@ function dashboard(histogram_id, piechart_id, legend_id, fData){
     var leg= legend(tF);  // create the legend.
     width = width - $(document.getElementById("legend")).width();
     var hG = histoGram(sF), // create the histogram.
-        pC = pieChart(tF); // create the pie-chart.
+        pC = pieChart(tF, false); // create the pie-chart.
 }
 </script>
 
 <script>
 var complianceData=[
-{Major:'History',compliance:{Yes:25, No:75},students:1000}
-,{Major:'English',compliance:{Yes:24, No:76},students:2000}
-,{Major:'Math',compliance:{Yes:45, No:55},students:1500}
-,{Major:'Chemistry',compliance:{Yes:20, No:80},students:1900}
-,{Major:'Computer Science',compliance:{Yes:30, No:70},students:2700}
-,{Major:'American Studies',compliance:{Yes:12, No:88},students:1010}
-,{Major:'Fun',compliance:{Yes:33, No:67},students:1800}
-,{Major:'Fun2',compliance:{Yes:23, No:77},students:1100}
-,{Major:'Fun3',compliance:{Yes:20, No:80},students:800}
-,{Major:'Fun4',compliance:{Yes:60, No:40},students:900}
+{Major:'Economy',compliance:{Yes:25, No:75},students:138}
+,{Major:'Political Science',compliance:{Yes:24, No:76},students:126}
+,{Major:'Computer Science',compliance:{Yes:45, No:55},students:77}
+,{Major:'Psychology',compliance:{Yes:20, No:80},students:72}
+,{Major:'English',compliance:{Yes:30, No:70},students:71}
+,{Major:'History',compliance:{Yes:12, No:88},students:71}
+,{Major:'Mechanical Engineering',compliance:{Yes:33, No:67},students:60}
+,{Major:'Biology',compliance:{Yes:23, No:77},students:56}
+,{Major:'Neuroscience and Behavior',compliance:{Yes:20, No:80},students:54}
+,{Major:'Engineering and Management Systems',compliance:{Yes:60, No:40},students:47}
 ];
+var overallData=[{Major:'Overall',compliance:{Yes:66, No:34},students:0}];
 
-dashboard('#histogram', '#piechart', '#legend', complianceData);
+dashboard('#histogram', '#piechart', '#legend', complianceData, overallData);
 </script>
